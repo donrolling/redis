@@ -27,7 +27,6 @@ namespace Tests
     public class TestBase
     {
         public IOptions<AppSettings> AppSettings { get; private set; }
-
         public Microsoft.Extensions.Logging.ILogger Logger { get; private set; }
         public ILoggerFactory LoggerFactory { get; private set; }
         public TestContext TestContext { get; set; }
@@ -41,9 +40,9 @@ namespace Tests
             }
         }
 
-        public void Init()
+        public void Init(bool useStandardAppCacheService = true)
         {
-            var services = PreInit();
+            var services = PreInit(useStandardAppCacheService);
             Init(services);
         }
 

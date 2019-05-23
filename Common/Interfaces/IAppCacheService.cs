@@ -17,16 +17,16 @@ namespace Common.Interfaces {
 
 		Task<T> GetAsync<T>(string key, T defaultValue);
 
-		T GetSet<T>(string key, Func<T> func, int expireTimeInMinutes = 20);
+		T GetSet<T>(string key, Func<T> func, TimeSpan? expiration = null);
 
-		Task<T> GetSetAsync<T>(string key, Func<Task<T>> func, int expireTimeInMinutes = 20);
+		Task<T> GetSetAsync<T>(string key, Func<Task<T>> func, TimeSpan? expiration = null);
 
 		void Remove(string key);
 
         Task<bool> RemoveAsync(string key);
 
-		void Set<T>(string key, T entity, int expireTimeInMinutes = 20);
+		void Set<T>(string key, T entity, TimeSpan? expiration = null);
 
-		Task<bool> SetAsync<T>(string key, T entity, int expireTimeInMinutes = 20);
+		Task<bool> SetAsync<T>(string key, T entity, TimeSpan? expiration = null);
 	}
 }

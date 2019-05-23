@@ -9,6 +9,7 @@ namespace Common.Services
 {
     public class RedisCacheService : IAppCacheService
     {
+        private const int _defaultExpirationInMinutes = 20;
         private IDatabase _cache;
         private string _databaseConnectionUrl;
         private ConnectionMultiplexer _redis;
@@ -79,25 +80,32 @@ namespace Common.Services
             return await getAsync(key);
         }
 
-        public T GetSet<T>(string key, Func<T> func, int expireTimeInMinutes = 20)
+        public T GetSet<T>(string key, Func<T> func, TimeSpan? expiration = null)
         {
             var x = Get<T>(key);
             if (x == null)
             {
                 var y = func.Invoke();
-                set<T>(key, y, expireTimeInMinutes);
+                set<T>(key, y, expiration);
                 return y;
             }
             return x;
         }
 
-        public async Task<T> GetSetAsync<T>(string key, Func<Task<T>> func, int expireTimeInMinutes = 20)
+        private static TimeSpan resolveExpiration(TimeSpan? expiration)
+        {
+            return (expiration == null || !expiration.HasValue) 
+                    ? TimeSpan.FromMinutes(_defaultExpirationInMinutes)
+                    : expiration.Value;
+        }
+
+        public async Task<T> GetSetAsync<T>(string key, Func<Task<T>> func, TimeSpan? expiration = null)
         {
             var x = await GetAsync<T>(key);
             if (x == null)
             {
                 var y = await func.Invoke();
-                await setAsync<T>(key, y, expireTimeInMinutes);
+                await setAsync<T>(key, y, expiration);
                 return y;
             }
             return x;
@@ -115,17 +123,17 @@ namespace Common.Services
 
         public void Set(string key, string value)
         {
-            set(key, value);
+            set(key, value, null);
         }
 
-        public void Set<T>(string key, T entity, int expireTimeInMinutes = 20)
+        public void Set<T>(string key, T entity, TimeSpan? expiration = null)
         {
-            set<T>(key, entity, expireTimeInMinutes);
+            set<T>(key, entity, expiration);
         }
 
-        public async Task<bool> SetAsync<T>(string key, T entity, int expireTimeInMinutes = 20)
+        public async Task<bool> SetAsync<T>(string key, T entity, TimeSpan? expiration = null)
         {
-            return await setAsync<T>(key, entity, expireTimeInMinutes);
+            return await setAsync<T>(key, entity, expiration);
         }
 
         private RedisValue get(string key)
@@ -156,26 +164,27 @@ namespace Common.Services
             return await _cache.KeyDeleteAsync(key);
         }
 
-        private void set(string key, string value)
-        {
-            _cache.StringSet(key, value);
-        }
-
-        private void set<T>(string key, T value, int expireTimeInMinutes)
+        private void set(string key, string value, TimeSpan? expiration)
         {
             if (key.IsNullOrEmpty())
             {
                 throw new Exception("Key cannot be empty.");
             }
+            var expirationValue = resolveExpiration(expiration);
+            _cache.StringSet(key, value);
+        }
+
+        private void set<T>(string key, T value, TimeSpan? expiration)
+        {
             if (value == null)
             {
                 return;
             }
             var x = JsonConvert.SerializeObject(value);
-            _cache.StringSet(key, x, TimeSpan.FromMinutes(expireTimeInMinutes));
+            set(key, x, expiration);
         }
 
-        private async Task<bool> setAsync<T>(string key, T value, int expireTimeInMinutes)
+        private async Task<bool> setAsync<T>(string key, T value, TimeSpan? expiration)
         {
             if (key.IsNullOrEmpty())
             {
@@ -186,7 +195,7 @@ namespace Common.Services
                 return false;
             }
             var x = JsonConvert.SerializeObject(value);
-            await _cache.StringSetAsync(key, x, TimeSpan.FromMinutes(expireTimeInMinutes));
+            await _cache.StringSetAsync(key, x, resolveExpiration(expiration));
             return true;
         }
 
