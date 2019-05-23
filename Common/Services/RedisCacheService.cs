@@ -92,13 +92,6 @@ namespace Common.Services
             return x;
         }
 
-        private static TimeSpan resolveExpiration(TimeSpan? expiration)
-        {
-            return (expiration == null || !expiration.HasValue) 
-                    ? TimeSpan.FromMinutes(_defaultExpirationInMinutes)
-                    : expiration.Value;
-        }
-
         public async Task<T> GetSetAsync<T>(string key, Func<Task<T>> func, TimeSpan? expiration = null)
         {
             var x = await GetAsync<T>(key);
@@ -134,6 +127,13 @@ namespace Common.Services
         public async Task<bool> SetAsync<T>(string key, T entity, TimeSpan? expiration = null)
         {
             return await setAsync<T>(key, entity, expiration);
+        }
+
+        private static TimeSpan resolveExpiration(TimeSpan? expiration)
+        {
+            return (expiration == null || !expiration.HasValue)
+                    ? TimeSpan.FromMinutes(_defaultExpirationInMinutes)
+                    : expiration.Value;
         }
 
         private RedisValue get(string key)

@@ -114,14 +114,6 @@ namespace Common.Services
             this.Cache.Set<T>(key, entity, expireTime);
         }
 
-        private DateTime resolveExpiration(TimeSpan? expiration)
-        {
-            var expire = (expiration == null || !expiration.HasValue)
-                            ? TimeSpan.FromMinutes(_defaultExpirationTimeInMinutes)
-                            : expiration.Value;
-            return DateTime.UtcNow.Add(expire);
-        }
-
         public async Task<bool> SetAsync<T>(string key, T entity, TimeSpan? expiration = null)
         {
             await Task.Run(() =>
@@ -129,6 +121,14 @@ namespace Common.Services
                 this.Cache.Set<T>(key, entity, resolveExpiration(expiration));
             });
             return true;
+        }
+
+        private DateTime resolveExpiration(TimeSpan? expiration)
+        {
+            var expire = (expiration == null || !expiration.HasValue)
+                            ? TimeSpan.FromMinutes(_defaultExpirationTimeInMinutes)
+                            : expiration.Value;
+            return DateTime.UtcNow.Add(expire);
         }
     }
 }
