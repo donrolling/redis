@@ -55,8 +55,7 @@ namespace redis_console
             _redis = ConnectionMultiplexer.Connect(databaseConnectionUrl);
             _cache = _redis.GetDatabase();
         }
-
-
+        
         private static void readFromCache()
         {
             Console.WriteLine("\r\n");
