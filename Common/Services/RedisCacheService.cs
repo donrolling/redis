@@ -11,7 +11,7 @@ namespace Common.Services
     {
         private const int _defaultExpirationInMinutes = 20;
         private IDatabase _cache;
-        private string _databaseConnectionUrl;
+        private readonly string _databaseConnectionUrl;
         private ConnectionMultiplexer _redis;
 
         public RedisCacheService(string databaseConnectionUrl = "localhost")

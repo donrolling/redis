@@ -3,6 +3,41 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Redis Test</h1>
 </div>
+
+<script>
+    function get(theUrl, callback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+        }
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+        xmlHttp.send(null);
+    }
+
+
+    function put(theUrl, theData, callback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+        }
+        xmlHttp.open("PUT", theUrl, true); // true for asynchronous 
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.send(theData);
+    }
+
+    function show(x) {
+        console.log(x);
+    }
+
+    var data = {
+        Message: "Hello World!"
+    };
+    
+    get("/api/redis/message", show);
+    put("/api/redis/", data, show);
+    get("/api/redis/message", show);
+</script>
