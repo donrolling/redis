@@ -6,38 +6,42 @@
     <h1 class="display-4">Redis Test</h1>
 </div>
 
-<script>
-    function get(theUrl, callback) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                callback(xmlHttp.responseText);
-        }
-        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-        xmlHttp.send(null);
-    }
+@section Scripts{
+    <script>
+        var url = '/api/redis/message';
+        var data = {
+            Message: "Hello World!",
+            ExtraStuff: {
+                More: "Stuff"
+            }
+        };
 
+        $.get(url,
+            function(response) {
+                var message = JSON.parse(response);
+                console.log(message);
 
-    function put(theUrl, theData, callback) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                callback(xmlHttp.responseText);
-        }
-        xmlHttp.open("PUT", theUrl, true); // true for asynchronous 
-        xmlHttp.setRequestHeader("Content-Type", "application/json");
-        xmlHttp.send(theData);
-    }
+                $.ajax({
+                    url: url,
+                    type: "PUT",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function() {
+                        console.log(response);
 
-    function show(x) {
-        console.log(x);
-    }
-
-    var data = {
-        Message: "Hello World!"
-    };
-    
-    get("/api/redis/message", show);
-    put("/api/redis/", data, show);
-    get("/api/redis/message", show);
-</script>
+                        $.get(url,
+                            function(response) {
+                                var message = JSON.parse(response);
+                                console.log(message);
+                            }
+                        );
+                    },
+                    error: function(response) {
+                        console.error(response);
+                    }
+                });
+            }
+        );
+    </script>
+}
