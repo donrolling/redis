@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Common.Services;
 using StackExchange.Redis;
 
 namespace redis_console
@@ -9,8 +10,9 @@ namespace redis_console
     class Program
     {
         private const string databaseConnectionUrl = "localhost";
-        private static ConnectionMultiplexer _redis;
-        private static IDatabase _cache;
+        private static RedisCacheService _redisCacheService;
+        //private static ConnectionMultiplexer _redis;
+        //private static IDatabase _cache;
         private static Random rnd = new Random(Guid.NewGuid().GetHashCode());
 
         private static Dictionary<string, string> _xs = new Dictionary<string, string> {
@@ -52,8 +54,9 @@ namespace redis_console
         {
             Console.WriteLine("\r\n");
             Console.WriteLine("Setup...");
-            _redis = ConnectionMultiplexer.Connect(databaseConnectionUrl);
-            _cache = _redis.GetDatabase();
+            _redisCacheService = new RedisCacheService();
+            //_redis = ConnectionMultiplexer.Connect(databaseConnectionUrl);
+            //_cache = _redis.GetDatabase();
         }
         
         private static void readFromCache()
@@ -107,12 +110,12 @@ namespace redis_console
 
         private static void set(string key, string value)
         {
-            _cache.StringSet(key, value);
+            _redisCacheService.Set(key, value);
         }
 
         private static string get(string key)
         {
-            return _cache.StringGet(key);
+            return _redisCacheService.Get(key);
         }
     }
 }
