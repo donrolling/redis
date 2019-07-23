@@ -6,42 +6,78 @@
     <h1 class="display-4">Redis Test</h1>
 </div>
 
+<div>
+    @using (Html.BeginForm("Get", "Redis", FormMethod.Get, new { enctype = "multipart/form-data" }))
+    {
+        <input id="displaykey" />
+        <button type="button" onclick="getKeyValue()">Get Key Value</button>
+        <div id="display" style="margin: 50px; border: 1px solid black; min-height: 50px;"></div>
+    }
+</div>
+
+<div>
+    <input id="key" />
+    <input id="keyvalue" />
+    <button type="button" onclick="setKeyValue($('#key').val(), $('#keyvalue').val())">Set Key Value</button>
+</div>
+
 @section Scripts{
     <script>
-        var url = '/api/redis/message';
-        var data = {
-            Message: "Hello World!",
-            ExtraStuff: {
-                More: "Stuff"
+        var url = '/api/redis/';
+
+        function isJson(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
             }
-        };
+            return true;
+        }
 
-        $.get(url,
-            function(response) {
-                var message = JSON.parse(response);
-                console.log(message);
+        function displayKey(key, value) {
+            $('#display').html(`<table width="100%"><tr><td>${key}</td><td>&nbsp;</td><td>${value}</td></tr></table>`);
+        }
 
-                $.ajax({
-                    url: url,
-                    type: "PUT",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function() {
-                        console.log(response);
-
-                        $.get(url,
-                            function(response) {
-                                var message = JSON.parse(response);
-                                console.log(message);
-                            }
-                        );
-                    },
-                    error: function(response) {
-                        console.error(response);
+        function getKey(key) {
+            $.ajax({
+                url: url + key,
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    if (response) {
+                        var d = JSON.parse(response);
+                        displayKey(key, JSON.stringify(d));
+                    } else {
+                        displayKey(key, 'Not found.');
                     }
-                });
-            }
-        );
+                },
+                error: function() {
+                    displayKey(key, 'Not found.');
+                }
+            });
+        }
+
+        function setKeyValue(key, data) {
+            var isjoin = isJson(data);
+            var d = isjoin ? JSON.parse(data) : { "Message": data };
+            $.ajax({
+                url: url + key,
+                type: "PUT",
+                data: JSON.stringify(d),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(response) {
+                    getKey(key);
+                },
+                error: function() {
+                    displayKey(key, 'Error.');
+                }
+            });
+        }
+
+        function getKeyValue() {
+            var value = $('#displaykey').val();
+            getKey(value);
+        }
     </script>
 }
