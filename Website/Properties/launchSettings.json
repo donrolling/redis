@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/Website",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:57970",
       "sslPort": 44357
@@ -10,15 +14,14 @@
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
-      "commandName": "IISExpress",
+      "commandName": "Executable",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Docker": {
-      "commandName": "Docker",
+      "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
@@ -28,6 +31,10 @@
       "httpPort": 57973,
       "useSSL": true,
       "sslPort": 44358
+    },
+    "Azure Dev Spaces": {
+      "commandName": "AzureDevSpaces",
+      "launchBrowser": true
     }
   }
 }
