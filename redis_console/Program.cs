@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Common.Services;
+using Common.Cache;
 using StackExchange.Redis;
 
 namespace redis_console
@@ -54,9 +54,7 @@ namespace redis_console
         {
             Console.WriteLine("\r\n");
             Console.WriteLine("Setup...");
-            _redisCacheService = new RedisCacheService();
-            //_redis = ConnectionMultiplexer.Connect(databaseConnectionUrl);
-            //_cache = _redis.GetDatabase();
+            _redisCacheService = new RedisCacheService(databaseConnectionUrl);
         }
         
         private static void readFromCache()

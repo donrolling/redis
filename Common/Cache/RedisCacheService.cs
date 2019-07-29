@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Common.Extensions;
-using Common.Interfaces;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
-namespace Common.Services
+namespace Common.Cache
 {
     public class RedisCacheService : IAppCacheService
     {
@@ -14,7 +13,7 @@ namespace Common.Services
         private readonly string _databaseConnectionUrl;
         private ConnectionMultiplexer _redis;
 
-        public RedisCacheService(string databaseConnectionUrl = "localhost")
+        public RedisCacheService(string databaseConnectionUrl)
         {
             _databaseConnectionUrl = databaseConnectionUrl;
             setup();
@@ -42,7 +41,7 @@ namespace Common.Services
             {
                 return JsonConvert.DeserializeObject<T>(x);
             }
-            return default(T);
+            return default;
         }
 
         public T Get<T>(string key, T defaultValue)
@@ -50,7 +49,7 @@ namespace Common.Services
             var x = Get<T>(key);
             if (x != null)
             {
-                return (T)x;
+                return x;
             }
             return defaultValue;
         }
@@ -62,7 +61,7 @@ namespace Common.Services
             {
                 return JsonConvert.DeserializeObject<T>(x);
             }
-            return default(T);
+            return default;
         }
 
         public async Task<T> GetAsync<T>(string key, T defaultValue)
@@ -86,7 +85,7 @@ namespace Common.Services
             if (x == null)
             {
                 var y = func.Invoke();
-                set<T>(key, y, expiration);
+                set(key, y, expiration);
                 return y;
             }
             return x;
@@ -98,7 +97,7 @@ namespace Common.Services
             if (x == null)
             {
                 var y = await func.Invoke();
-                await setAsync<T>(key, y, expiration);
+                await setAsync(key, y, expiration);
                 return y;
             }
             return x;
@@ -121,17 +120,17 @@ namespace Common.Services
 
         public void Set<T>(string key, T entity, TimeSpan? expiration = null)
         {
-            set<T>(key, entity, expiration);
+            set(key, entity, expiration);
         }
 
         public async Task<bool> SetAsync<T>(string key, T entity, TimeSpan? expiration = null)
         {
-            return await setAsync<T>(key, entity, expiration);
+            return await setAsync(key, entity, expiration);
         }
 
         private static TimeSpan resolveExpiration(TimeSpan? expiration)
         {
-            return (expiration == null || !expiration.HasValue)
+            return expiration == null || !expiration.HasValue
                     ? TimeSpan.FromMinutes(_defaultExpirationInMinutes)
                     : expiration.Value;
         }

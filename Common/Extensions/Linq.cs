@@ -11,7 +11,7 @@ namespace Common.Extensions {
 			Func<TA, TK> selectKeyA,
 			Func<TB, TK> selectKeyB,
 			IEqualityComparer<TK> comparer = null) {
-			return a.Where(aItem => !b.Select(bItem => selectKeyB(bItem)).Contains(selectKeyA(aItem), comparer));
+            return a.Where(aItem => !b.Select(bItem => selectKeyB(bItem)).Contains(selectKeyA(aItem), comparer));
 		}
 	}
 }

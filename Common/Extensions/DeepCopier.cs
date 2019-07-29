@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
 
-namespace common {
+namespace Common.Extensions
+{
+    public static class DeepCopier
+    {
 
-	public static class DeepCopier {
-
-		public static T DeepCopy<T>(this T source) {
-			var serialized = JsonConvert.SerializeObject(source);
-			return JsonConvert.DeserializeObject<T>(serialized);
-		}
-	}
+        public static T DeepCopy<T>(this T source)
+        {
+            var serialized = JsonConvert.SerializeObject(source);
+            return JsonConvert.DeserializeObject<T>(serialized);
+        }
+    }
 }
