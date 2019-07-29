@@ -1,5 +1,16 @@
-version: "3"
+version: '3.4'
+
 services:
+  website:
+    image: ${DOCKER_REGISTRY-}website
+    build:
+      context: .
+      dockerfile: Website/Dockerfile
+    networks:
+      - redis-net
+    depends_on:
+      - redis
+
   redis:
     image: redis:4.0.5-alpine
     command: ["redis-server", "--appendonly", "yes"]
