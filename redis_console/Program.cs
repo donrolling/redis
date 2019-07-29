@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Common.Cache;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using Common.Cache;
-using StackExchange.Redis;
 
 namespace redis_console
 {
-    class Program
+    internal class Program
     {
         private const string databaseConnectionUrl = "localhost";
         private static RedisCacheService _redisCacheService;
+
         //private static ConnectionMultiplexer _redis;
         //private static IDatabase _cache;
         private static Random rnd = new Random(Guid.NewGuid().GetHashCode());
@@ -27,7 +26,7 @@ namespace redis_console
             {"i", "I'm your older brother, Mike, and I was stepped over!"},
         };
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             setup();
             writeToCache();
@@ -56,7 +55,7 @@ namespace redis_console
             Console.WriteLine("Setup...");
             _redisCacheService = new RedisCacheService(databaseConnectionUrl);
         }
-        
+
         private static void readFromCache()
         {
             Console.WriteLine("\r\n");

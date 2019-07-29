@@ -30,7 +30,7 @@ namespace Website.Controllers
                 var str = JsonConvert.SerializeObject(value);
                 _appCacheService.Set(key, str);
             }
-            catch (Exception e)
+            catch 
             {
                 return false;
             }
